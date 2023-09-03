@@ -21,7 +21,14 @@ provision:
     set -eux -o pipefail
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
-    apt-get -y install nala
+    apt-get -y install nala git
+
+- mode: user
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    git config --global user.name "Florian Wilhelm"
+    git config --global user.email "52838694+fwilhe2@users.noreply.github.com"
 
 containerd:
   system: false
