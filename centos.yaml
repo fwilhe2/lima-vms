@@ -1,0 +1,66 @@
+# SPDX-FileCopyrightText: Florian Wilhelm
+# SPDX-License-Identifier: Apache-2.0
+
+# Based on the examples by Akihiro Suda and the lima contributors, see https://github.com/lima-vm/lima, distributed under Apache-2.0 license
+
+images:
+- location: "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2"
+  arch: "x86_64"
+- location: "https://cloud.centos.org/centos/9-stream/aarch64/images/CentOS-Stream-GenericCloud-9-latest.aarch64.qcow2"
+  arch: "aarch64"
+mounts:
+- location: "~"
+- location: "/tmp/lima"
+  writable: true
+
+firmware:
+  # CentOS Stream 9 still requires legacyBIOS, while AlmaLinux 9 and Rocky Linux 9 do not.
+  legacyBIOS: true
+
+provision:
+- mode: system
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    dnf install -y git
+
+- mode: user
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    git config --global user.name "Florian Wilhelm"
+    git config --global user.email "52838694+fwilhe2@users.noreply.github.com"
+    echo "
+    alias ls='ls --group-directories-first --time-style=+\"%Y-%m-%d %H:%M\" --color=auto --classify'
+    alias ll='ls -lh'
+    alias la='ls -lah'
+    alias lh=la
+
+    # Git aliases - based on http://www.catonmat.net/blog/git-aliases/
+    alias g=git
+    alias ga='git add'
+    alias gp='git push'
+    alias gl='git log'
+    alias gs='git status'
+    alias gd='git diff'
+    alias gdc='git diff --cached'
+    alias gm='git commit'
+    alias gb='git branch'
+    alias gc='git checkout'
+    alias gci='git commit'
+    alias gcl='git clone'" >> ~/.bashrc
+
+    git config --global alias.st status
+    git config --global alias.co checkout
+    git config --global alias.rb rebase
+    git config --global alias.ci commit
+    git config --global alias.br branch
+    git config --global alias.cp cherry-pick
+    git config --global alias.fa 'fetch --all'
+    git config --global alias.lg 'log --graph --decorate --pretty=oneline --abbrev-commit'
+    git config --global alias.ls 'log --decorate --pretty=oneline --abbrev-commit'
+    git config --global credential.helper store
+
+containerd:
+  system: false
+  user: false
