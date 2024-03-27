@@ -81,14 +81,18 @@ def download_latest_fedora_versions():
         versions = json.loads(response.read().decode())
         return versions
 
+def filter_versions(versions, current_fedora_version, arch):
+    return [x for x in versions if x['version'] == current_fedora_version and x['arch'] == arch and x['variant'] == 'Cloud' and x['subvariant'] == 'Cloud_Base' and x['link'].endswith('qcow2') ]
+
 def geturl(versions, current_fedora_version, arch):
-    y = [x for x in versions if x['version'] == current_fedora_version and x['arch'] == arch and x['variant'] == 'Cloud' and x['subvariant'] == 'Cloud_Base' and x['link'].endswith('qcow2') ]
-    return y[0]['link']
+    recent_versions = filter_versions(versions, current_fedora_version, arch)
+    assert len(recent_versions) == 1
+    return recent_versions[0]['link']
 
-def getsha(versions, version, arch):
-    y = [x for x in versions if x['version'] == version and x['arch'] == arch and x['variant'] == 'Cloud' and x['subvariant'] == 'Cloud_Base' and x['link'].endswith('qcow2') ]
-    return y[0]['sha256']
-
+def getsha(versions, current_fedora_version, arch):
+    recent_versions = filter_versions(versions, current_fedora_version, arch)
+    assert len(recent_versions) == 1
+    return recent_versions[0]['sha256']
 
 if __name__ == "__main__":
     latest_fedora_versions = download_latest_fedora_versions()
