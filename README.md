@@ -8,6 +8,7 @@ Files in this repo are based on [examples](https://github.com/lima-vm/lima/tree/
 # Pick distro
 LIMA_DISTRO=debian
 LIMA_DISTRO=fedora
+LIMA_DISTRO=almalinux
 LIMA_DISTRO=centos
 
 # Create VM from template on github
