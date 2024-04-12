@@ -1,0 +1,89 @@
+# SPDX-FileCopyrightText: Florian Wilhelm
+# SPDX-License-Identifier: Apache-2.0
+
+# Based on the examples by Akihiro Suda and the lima contributors, see https://github.com/lima-vm/lima, distributed under Apache-2.0 license
+
+# This template requires Lima v0.7.0 or later.
+images:
+# Try to use release-yyyyMMdd image if available. Note that release-yyyyMMdd will be removed after several months.
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release-20240307/ubuntu-23.10-server-cloudimg-amd64.img"
+  arch: "x86_64"
+  digest: "sha256:415123eb3b3ba1841e39a25d0dd82da43f968c7625b9cdf6312235b9b8ec17e9"
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release-20240307/ubuntu-23.10-server-cloudimg-arm64.img"
+  arch: "aarch64"
+  digest: "sha256:373e8866d33909b283b14c86c18f8a48844c8f9fe6aed3ca280288846fc4fb74"
+# Fallback to the latest release image.
+# Hint: run `limactl prune` to invalidate the cache
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release/ubuntu-23.10-server-cloudimg-amd64.img"
+  arch: "x86_64"
+- location: "https://cloud-images.ubuntu.com/releases/23.10/release/ubuntu-23.10-server-cloudimg-arm64.img"
+  arch: "aarch64"
+
+
+provision:
+- mode: system
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get -y install nala git
+
+    # Add Docker's official GPG key:
+    apt-get update
+    apt-get -y install ca-certificates curl
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      tee /etc/apt/sources.list.d/docker.list > /dev/null
+    apt-get update
+
+    apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+- mode: user
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    git config --global user.name "Florian Wilhelm"
+    git config --global user.email "52838694+fwilhe2@users.noreply.github.com"
+    echo "
+    alias ls='ls --group-directories-first --time-style=+\"%Y-%m-%d %H:%M\" --color=auto --classify'
+    alias ll='ls -lh'
+    alias la='ls -lah'
+    alias lh=la
+
+    # Git aliases - based on http://www.catonmat.net/blog/git-aliases/
+    alias g=git
+    alias ga='git add'
+    alias gp='git push'
+    alias gl='git log'
+    alias gs='git status'
+    alias gd='git diff'
+    alias gdc='git diff --cached'
+    alias gm='git commit'
+    alias gb='git branch'
+    alias gc='git checkout'
+    alias gci='git commit'
+    alias gcl='git clone'" >> ~/.bashrc
+
+    git config --global alias.st status
+    git config --global alias.co checkout
+    git config --global alias.rb rebase
+    git config --global alias.ci commit
+    git config --global alias.br branch
+    git config --global alias.cp cherry-pick
+    git config --global alias.fa 'fetch --all'
+    git config --global alias.lg 'log --graph --decorate --pretty=oneline --abbrev-commit'
+    git config --global alias.ls 'log --decorate --pretty=oneline --abbrev-commit'
+    git config --global credential.helper store
+
+    sudo usermod -aG docker $USER
+
+containerd:
+  system: false
+  user: false
