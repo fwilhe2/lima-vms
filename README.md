@@ -17,3 +17,18 @@ limactl create --name=$LIMA_DISTRO-vm https://raw.githubusercontent.com/fwilhe2/
 # Create VM from local template
 cat $LIMA_DISTRO.yaml | limactl create --name=$LIMA_DISTRO-vm -
 ```
+
+
+## Docker
+
+Reboot the instance once to make sure the user can run docker without sudo
+
+```
+limactl create --name docker docker.yaml && limactl start docker && limactl stop docker  && limactl start docker  && limactl shell docker
+```
+
+## KIND
+
+```
+limactl create --name kind kind.yaml && limactl start kind && limactl stop kind  && limactl start kind  && limactl shell kind
+```
