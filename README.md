@@ -30,5 +30,5 @@ limactl create --name docker docker.yaml && limactl start docker && limactl stop
 ## KIND
 
 ```
-limactl create --name kind kind.yaml && limactl start kind && limactl stop kind  && limactl start kind  && limactl shell kind
+limactl create --name kind kubernetes/kind.yaml && limactl start kind && limactl stop kind  && limactl start kind  && limactl shell kind
 ```
