@@ -23,8 +23,16 @@ cat $LIMA_DISTRO.yaml | limactl create --name=$LIMA_DISTRO-vm -
 
 Reboot the instance once to make sure the user can run docker without sudo
 
+### Docker CE (from docker's repos)
+
 ```
-limactl create --name docker docker.yaml && limactl start docker && limactl stop docker  && limactl start docker  && limactl shell docker
+limactl create --name docker-ce container/docker-ce.yaml && limactl start docker-ce && limactl stop docker-ce  && limactl start docker-ce  && limactl shell docker-ce
+```
+
+### Docker.io (from debian's repos)
+
+```
+limactl create --name docker-io container/docker-io.yaml && limactl start docker-io && limactl stop docker-io  && limactl start docker-io  && limactl shell docker-io
 ```
 
 ## KIND
